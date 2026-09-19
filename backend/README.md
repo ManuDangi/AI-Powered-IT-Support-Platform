@@ -23,29 +23,37 @@ The backend provides secure authentication, ticket management, AI-based ticket c
 
 ## 📸 Project Preview
 
-### Dashboard
+The following screenshots demonstrate the main features of the AI-Powered IT Support Resolution Platform.
 
-![Dashboard](screenshots/dashboard.png)
+### Employee Dashboard
 
-### Swagger API
+![Employee Dashboard](screenshots/emp_dashboard.png)
 
-![Swagger API](screenshots/swagger-api.png)
+### Admin Dashboard
 
-### Create Ticket
+![Admin Dashboard](screenshots/DashBoard.png)
 
-![Create Ticket](screenshots/create-ticket.png)
+### Create New Ticket
 
-### Ticket Details
+![Create New Ticket](screenshots/new_ticket.png)
 
-![Ticket Details](screenshots/ticket-details.png)
+### Employee Ticket View
 
-### Human Review Workflow
+![Employee Ticket View](screenshots/emp_ticket.png)
 
-![Workflow](screenshots/workflow.png)
+### All Tickets (Support Agent/Admin)
 
----
+![All Tickets](screenshots/All_tickets.png)
 
+### Audit Logs
+
+![Audit Logs](screenshots/audit_log.png)
+
+### Swagger API Documentation
+
+![Swagger API](screenshots/image.png)
 ## 🏗 Architecture
+
 
 This project follows **Clean Architecture**.
 
