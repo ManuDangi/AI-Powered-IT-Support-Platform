@@ -1,0 +1,7 @@
+@{
+    ViewData["Title"] = "Error";
+}
+<div class="alert alert-danger">
+    <h4>Something went wrong.</h4>
+    <p>Request ID: @System.Diagnostics.Activity.Current?.Id</p>
+</div>

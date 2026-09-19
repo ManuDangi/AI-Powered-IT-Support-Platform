@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AIITSupport.Application\AIITSupport.Application.csproj" />
+    <ProjectReference Include="..\..\src\AIITSupport.Infrastructure\AIITSupport.Infrastructure.csproj" />
+    <ProjectReference Include="..\AIITSupport.Tests\AIITSupport.Tests.csproj" />
+    <ProjectReference Include="..\..\src\AIITSupport.Domain\AIITSupport.Domain.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

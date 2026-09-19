@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reused only for the shared DTOs (AuthResponse, TicketResponse, etc.)
+         so the frontend doesn't hand-duplicate contract shapes. The Web
+         project still talks to the API purely over HTTP, never touches
+         Infrastructure/EF/the database directly. -->
+    <ProjectReference Include="..\..\AIITSupport\src\AIITSupport.Application\AIITSupport.Application.csproj" />
+  </ItemGroup>
+
+</Project>

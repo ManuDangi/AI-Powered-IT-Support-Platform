@@ -1,0 +1,46 @@
+@model List<TicketResponse>
+@{
+    ViewData["Title"] = "Tickets";
+    var isAgentOrAdmin = (bool)ViewBag.IsAgentOrAdmin;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@(isAgentOrAdmin ? "All Tickets" : "My Tickets")</h2>
+    <a asp-action="Create" class="btn btn-primary">+ New Ticket</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">No tickets yet.</p>
+}
+else
+{
+    <table class="table table-hover bg-white shadow-sm">
+        <thead>
+            <tr><th>Ticket #</th><th>Title</th><th>Category</th><th>Priority</th><th>Status</th><th>Created</th><th></th></tr>
+        </thead>
+        <tbody>
+        @foreach (var t in Model)
+        {
+            var badgeClass = t.Status switch
+            {
+                "Resolved" => "bg-success",
+                "HumanReview" => "bg-warning text-dark",
+                "Escalated" => "bg-danger",
+                "Rejected" => "bg-dark",
+                "AIProcessingFailed" => "bg-danger",
+                _ => "bg-secondary"
+            };
+            <tr>
+                <td>@t.TicketNumber</td>
+                <td>@t.Title</td>
+                <td>@(t.Category ?? "-")</td>
+                <td>@t.Priority</td>
+                <td><span class="badge status-badge @badgeClass">@t.Status</span></td>
+                <td>@t.CreatedAt.ToLocalTime().ToString("dd MMM, HH:mm")</td>
+                <td><a asp-action="Details" asp-route-id="@t.Id" class="btn btn-sm btn-outline-secondary">Open</a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

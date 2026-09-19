@@ -1,0 +1,32 @@
+@model List<AuditLogResponse>
+@{
+    ViewData["Title"] = "Audit Logs";
+}
+
+<h2 class="mb-3">Audit Logs</h2>
+<p class="text-muted">Most recent 200 entries — who did what, on which ticket, and when.</p>
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">No audit entries yet.</p>
+}
+else
+{
+    <table class="table table-sm table-hover bg-white shadow-sm">
+        <thead>
+            <tr><th>Time</th><th>User ID</th><th>Ticket ID</th><th>Action</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <td class="text-nowrap">@log.CreatedAt.ToLocalTime().ToString("dd MMM, HH:mm:ss")</td>
+                <td>@(log.UserId?.ToString() ?? "-")</td>
+                <td>@(log.TicketId?.ToString() ?? "-")</td>
+                <td><span class="badge bg-secondary">@log.Action</span></td>
+                <td>@log.Details</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

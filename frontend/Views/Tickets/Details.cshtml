@@ -1,0 +1,129 @@
+@model TicketResponse
+@{
+    ViewData["Title"] = $"Ticket {Model.TicketNumber}";
+    var analysis = ViewBag.Analysis as AIAnalysisResponse;
+    var isAgentOrAdmin = (bool)ViewBag.IsAgentOrAdmin;
+
+    var badgeClass = Model.Status switch
+    {
+        "Resolved" => "bg-success",
+        "HumanReview" => "bg-warning text-dark",
+        "Escalated" => "bg-danger",
+        "Rejected" => "bg-dark",
+        "AIProcessingFailed" => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+    var isTerminal = Model.Status is "Resolved" or "Rejected" or "Escalated";
+}
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h2>@Model.Title</h2>
+        <p class="text-muted mb-1">@Model.TicketNumber &middot; @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</p>
+        <span class="badge status-badge @badgeClass fs-6">@Model.Status</span>
+        <span class="badge status-badge bg-light text-dark border">@(Model.Category ?? "Uncategorized")</span>
+        <span class="badge status-badge bg-light text-dark border">Priority: @Model.Priority</span>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">&larr; Back to list</a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Description</h5>
+        <p class="card-text">@Model.Description</p>
+    </div>
+</div>
+
+<!-- ---------- AI Analysis ---------- -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title">AI Analysis</h5>
+
+        @if (analysis == null)
+        {
+            <p class="text-muted">No analysis yet.</p>
+            <form asp-action="Analyze" asp-route-id="@Model.Id" method="post">
+                <button type="submit" class="btn btn-primary">Run AI Analysis</button>
+            </form>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-3"><strong>Category:</strong> @analysis.Category</div>
+                <div class="col-md-3"><strong>Urgency:</strong> @analysis.Urgency</div>
+                <div class="col-md-3"><strong>Confidence:</strong> @analysis.Confidence.ToString("P0")</div>
+                <div class="col-md-3"><strong>Analyzed:</strong> @analysis.CreatedAt.ToLocalTime().ToString("HH:mm")</div>
+            </div>
+            <hr />
+            <p><strong>Summary:</strong> @analysis.Summary</p>
+            <p class="mb-0"><strong>Recommendation:</strong> @analysis.Recommendation</p>
+
+            @if (Model.Status == "New" || Model.Status == "AIProcessingFailed")
+            {
+                <form asp-action="Analyze" asp-route-id="@Model.Id" method="post" class="mt-3">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Re-run Analysis</button>
+                </form>
+            }
+        }
+    </div>
+</div>
+
+<!-- ---------- Policy / Workflow (agent & admin only) ---------- -->
+@if (isAgentOrAdmin)
+{
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Workflow</h5>
+
+            @if (Model.Status == "AIAnalyzed")
+            {
+                <p class="text-muted">AI analysis is done. Run the Policy Engine to decide auto-resolve vs human review.</p>
+                <form asp-action="Process" asp-route-id="@Model.Id" method="post">
+                    <button type="submit" class="btn btn-primary">Run Policy Check</button>
+                </form>
+            }
+            else if (Model.Status == "HumanReview")
+            {
+                <p class="text-muted">The Policy Engine flagged this ticket for human review.</p>
+                <div class="row g-2">
+                    <div class="col-md-8">
+                        <form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+                            <input type="text" name="comments" class="form-control" placeholder="Approval comments (optional)" />
+                            <button type="submit" class="btn btn-success text-nowrap">Approve</button>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form asp-action="Reject" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+                            <input type="text" name="comments" class="form-control" placeholder="Reason (optional)" />
+                            <button type="submit" class="btn btn-danger text-nowrap">Reject</button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else if (Model.Status == "Resolved" || Model.Status == "Rejected")
+            {
+                <p class="mb-0 text-muted">This ticket has reached a final state (<strong>@Model.Status</strong>). No further workflow actions.</p>
+            }
+            else
+            {
+                <p class="mb-0 text-muted">Run AI Analysis first before the Policy Engine can evaluate this ticket.</p>
+            }
+        </div>
+    </div>
+}
+
+<!-- ---------- Escalate (owner or agent/admin, any non-terminal state) ---------- -->
+@if (!isTerminal)
+{
+    <div class="card shadow-sm mb-4 border-danger">
+        <div class="card-body">
+            <h5 class="card-title text-danger">Escalate</h5>
+            <p class="text-muted">If this ticket needs urgent attention outside the normal flow, escalate it manually.</p>
+            <form asp-action="Escalate" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+                <input type="text" name="reason" class="form-control" placeholder="Reason for escalation" required />
+                <button type="submit" class="btn btn-outline-danger text-nowrap">Escalate</button>
+            </form>
+        </div>
+    </div>
+}

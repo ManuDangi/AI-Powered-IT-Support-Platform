@@ -1,0 +1,28 @@
+# Build folders
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Node
+**/node_modules/
+
+# Environment
+**/appsettings.Development.json
+.env
+.env.*
+
+# Logs
+*.log
+
+# Database
+*.db
+*.mdf
+*.ldf
+
+# OS
+.DS_Store
+Thumbs.db
